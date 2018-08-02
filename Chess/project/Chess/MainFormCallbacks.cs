@@ -12,7 +12,8 @@ namespace Chess
 {
     public partial class MainForm : Form, UIBoard
     {
-        private ToolStripMenuItem temp; // selected difficulty
+        private ToolStripMenuItem temp_difficulty; // selected difficulty
+        private ToolStripMenuItem temp_gameplayType; // selected gameplay type
         TimeSpan m_whiteTime = new TimeSpan(0);
         TimeSpan m_blackTime = new TimeSpan(0);
 
@@ -30,7 +31,8 @@ namespace Chess
             picTurn.Image = graphics.TurnIndicator[Player.WHITE];
 
             // setup initial ai depth
-            temp = mnuDif3;
+            temp_difficulty = mnuDif3;
+            temp_gameplayType = defaultChessType;
             AI.DEPTH = 3;
 
             SetStatus(false, "Choose New Game or Manual Board.");
@@ -74,12 +76,31 @@ namespace Chess
             }
         }
 
+        private void GameplayType(object sender, EventArgs e)
+        {
+            //uncheck the current gameplay type
+            if(temp_gameplayType != null)
+            {
+                temp_gameplayType.CheckState = CheckState.Unchecked;
+            }
+
+            //if the game is currently going, stop the game. 
+            if (!m_manualBoard) Stop();
+
+            //check the current gameplay type
+            temp_gameplayType = (ToolStripMenuItem)sender;
+            temp_gameplayType.CheckState = CheckState.Checked;
+
+            //Log that the gametype has been changed
+            LogMove($"Game set to {temp_gameplayType.Text}");
+        }
+
         private void Difficulty(object sender, EventArgs e)
         {
             // uncheck previously checked
-            if (temp != null)
+            if (temp_difficulty != null)
             {
-                temp.CheckState = CheckState.Unchecked;
+                temp_difficulty.CheckState = CheckState.Unchecked;
             }
 
             // if the ai was currently thinking, stop it
@@ -87,12 +108,12 @@ namespace Chess
             AI.STOP = true;
 
             // check the desired difficulty
-            temp = (ToolStripMenuItem)sender;
-            temp.CheckState = CheckState.Checked;
+            temp_difficulty = (ToolStripMenuItem)sender;
+            temp_difficulty.CheckState = CheckState.Checked;
 
             // update the ai difficulty
-            AI.DEPTH = Int32.Parse((String)temp.Tag);
-            LogMove("AI Difficulty " + (string)temp.Tag + "\n");
+            AI.DEPTH = Int32.Parse((String)temp_difficulty.Tag);
+            LogMove("AI Difficulty " + (string)temp_difficulty.Tag + "\n");
 
             // if the ai was running when changed, restart their turn
             if (was)

@@ -124,20 +124,30 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.fileToolStripMenuItem.Text = "Game";
-            //
-            //defaultChessType
-            //
-            //
-            //chess960Type
-            //
-
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(213, 6);
-
-
+            // 
+            // defaultChessType
+            // 
+            this.defaultChessType.Checked = true;
+            this.defaultChessType.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.defaultChessType.Name = "defaultChessType";
+            this.defaultChessType.Size = new System.Drawing.Size(144, 22);
+            this.defaultChessType.Tag = "3";
+            this.defaultChessType.Text = "Default Chess Gameplay";
+            this.defaultChessType.Click += new System.EventHandler(this.GameplayType);
+            //
+            //chess960Type
+            //
+            this.chess960Type.Checked = false;
+            this.chess960Type.Name = "chess960Type";
+            this.chess960Type.Size = new System.Drawing.Size(144, 22);
+            this.chess960Type.Tag = "3";
+            this.chess960Type.Text = "Chess 960 Gameplay";
+            this.chess960Type.Click += new System.EventHandler(this.GameplayType);
             // 
             // newAIGame
             // 
@@ -579,7 +589,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem manualBoardToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem setPieceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem whiteToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem White_Pawn;
@@ -604,6 +613,7 @@
         //Damien's additions
         private System.Windows.Forms.ToolStripMenuItem defaultChessType;
         private System.Windows.Forms.ToolStripMenuItem chess960Type;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

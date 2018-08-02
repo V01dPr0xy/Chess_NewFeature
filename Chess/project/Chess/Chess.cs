@@ -15,7 +15,7 @@ namespace Chess
         private UIBoard m_UI;
         private int m_nPlayers;
 
-        public Chess(UIBoard ui, int nPlayers = 1, bool setupBoard = true)
+        public Chess(UIBoard ui, int nPlayers = 1, bool setupBoard = true, bool gameplayType = false)
         {
             // callback setup
             this.m_UI = ui;
@@ -31,7 +31,15 @@ namespace Chess
             this.Board = new ChessBoard();
             if (setupBoard)
             {
-                this.Board.SetInitialPlacement();
+                //check for the gameplay type if it is not the default
+                if (gameplayType)
+                {
+                    this.Board.SetInitialPlacement();
+                }
+                else
+                {
+                    this.Board.SetRandomPlacement();
+                }
             }
 
             // update ui
@@ -94,8 +102,8 @@ namespace Chess
             // has previously selected something
             if (this.Board.Grid[this.Selection.number][this.Selection.letter].piece != Piece.NONE
                 && this.Turn == this.Board.Grid[this.Selection.number][this.Selection.letter].player
-                && (this.m_nPlayers == 2 
-                || this.Turn == Player.WHITE)) 
+                && (this.m_nPlayers == 2
+                || this.Turn == Player.WHITE))
             {
                 // get previous selections moves and determine if we chose a legal one by clicking
                 List<position_t> moves = LegalMoveSet.getLegalMove(this.Board, this.Selection);
@@ -123,7 +131,7 @@ namespace Chess
                                 LegalMoveSet.move(this.Board, new move_t(new position_t(7, row), new position_t(5, row)));
                             }
                         }
-                                
+
                         // finish move
                         switchPlayer();
                         if (detectCheckmate()) return new List<position_t>();

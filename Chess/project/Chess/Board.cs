@@ -126,6 +126,68 @@ namespace Chess
             return fitness;
         }
 
+        private bool SpotTaken(int letter, int number) => (Pieces[Player.WHITE].Where(p => p.letter == letter && p.number == number).Count() == 1);
+
+        private int Mirror(int letter) => ((letter % 2) == 1) ? 6 : 7;
+
+        private void AssignPiece(Piece piece, out int letter, out int number)
+        {
+            bool invalidPlacement = true;
+
+            //Generate a random letter and number
+            do
+            {
+                Random r = new Random();
+                letter = r.Next(0, 8);
+                number = r.Next(0, 2);
+
+                //Check if the spot is taken
+                if (!SpotTaken(letter, number))
+                {
+                    invalidPlacement = false;
+                }
+
+            } while (invalidPlacement);
+
+            //Assign both spots if not taken
+            SetPiece(piece, Player.WHITE, letter, number);
+            SetPiece(piece, Player.BLACK, letter, Mirror(number));
+        }
+
+        public void SetRandomPlacement()
+        {
+            //Add the pieces via using the SetPiece() method
+            //Check for placement, then add:
+            //Pawns
+            Random r = new Random();
+            int letter = r.Next(0, 8), number = r.Next(0, 2);
+
+            for (int i = 0; i < 8; i++)
+            {
+                AssignPiece(Piece.PAWN, out letter, out number);
+            }
+
+            //Queens
+            AssignPiece(Piece.QUEEN, out letter, out number);
+
+            //Bishops
+            AssignPiece(Piece.BISHOP, out letter, out number);
+            AssignPiece(Piece.BISHOP, out letter, out number);
+
+            //Rooks
+            AssignPiece(Piece.ROOK, out letter, out number);
+            AssignPiece(Piece.ROOK, out letter, out number);
+
+            //Knights
+            AssignPiece(Piece.KNIGHT, out letter, out number);
+            AssignPiece(Piece.KNIGHT, out letter, out number);
+            
+            //Kings
+            AssignPiece(Piece.KING, out letter, out number);
+            Kings[Player.WHITE] = new position_t(letter, number);
+            Kings[Player.BLACK] = new position_t(letter, Mirror(number));
+        }
+
         public void SetInitialPlacement()
         {
             for (int i = 0; i < 8; i++)

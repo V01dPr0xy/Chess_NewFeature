@@ -16,6 +16,7 @@ namespace Chess
         bool m_checkmate = false;
         bool m_manualBoard = false; // Don't init board on new game
         bool m_finalizedBoard = false;
+        bool m_defaultGamePlayType = true;
         Player m_manualPlayer = Player.WHITE;
         Piece m_manualPiece = Piece.PAWN;
 
@@ -73,7 +74,11 @@ namespace Chess
 
             // create new game for number of players
             m_aigame = (nPlayers == 0);
-            chess = new Chess(this, nPlayers, !m_manualBoard);
+
+            //check to see if a default gameplaytype is selected
+            m_defaultGamePlayType = (temp_gameplayType.Text.Equals("Default Chess Gameplay"));
+
+            chess = new Chess(this, nPlayers, !m_manualBoard, m_defaultGamePlayType);
 
             // show turn status
             SetTurn(Player.WHITE);
@@ -88,7 +93,7 @@ namespace Chess
             // show ai difficulty
             if (nPlayers < 2)
             {
-                LogMove("AI Difficulty " + (string)temp.Tag + "\n");
+                LogMove("AI Difficulty " + (string)temp_difficulty.Tag + "\n");
             }
 
             if (m_manualBoard)

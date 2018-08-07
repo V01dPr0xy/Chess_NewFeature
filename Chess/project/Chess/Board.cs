@@ -127,6 +127,7 @@ namespace Chess
         }
 
         private bool SpotTaken(int letter, int number) => (Pieces[Player.WHITE].Where(p => p.letter == letter && p.number == number).Count() == 1);
+
         private position_t PositionFromPieceType(Piece piece)
         {
             position_t result = new position_t(-1, -1);
@@ -136,8 +137,7 @@ namespace Chess
                 {
                     if ((int)Grid[i][j].piece == (int)piece)
                     {
-                        result = new position_t(i, j);
-                        break;
+                        return new position_t(i, j);
                     }
                 }
             }
@@ -149,28 +149,28 @@ namespace Chess
 
         private bool TileUnderPieceIsBlack(Piece piece)
         {
-            bool res = true;
+            bool res = false;
             //See if the tile is on white or black, then reassign if they are on the same colors
-            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsOdd())
+            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsEven())
                 //This means the tile is white
-                res = false;
-            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsEven())
+                res = true;
+            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsOdd())
                 //This means the tile is white
-                res = false;
+                res = true;
 
             return res;
         }
 
         private bool TileUnderPieceIsWhite(Piece piece)
         {
-            bool res = true;
+            bool res = false;
             //See if the tile is on white or black, then reassign if they are on the same colors
-            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsEven())
+            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsOdd())
                 //This means the tile is black
-                res = false;
-            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsOdd())
+                res = true;
+            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsEven())
                 //This means the tile is black
-                res = false;
+                res = true;
 
             return res;
         }
@@ -195,17 +195,17 @@ namespace Chess
                             letter = r.Next(0, 8);
                             number = r.Next(0, 2);
 
-                            isInvalidPlace = letter.IsOdd() && number.IsEven() ? false : letter.IsEven() && number.IsOdd() ? false : true;//Making sure the spot is white
+                            isInvalidPlace = letter.IsOdd() && number.IsEven() ? letter.IsEven() && number.IsOdd() ? true : false : false;//Making sure the spot is white
                         }
                     }
-                    else
+                    else if (TileUnderPieceIsWhite(piece))
                     {
                         while (isInvalidPlace)
                         {
                             letter = r.Next(0, 8);
                             number = r.Next(0, 2);
 
-                            isInvalidPlace = letter.IsEven() && number.IsEven() ? false : isInvalidPlace = letter.IsOdd() && number.IsOdd() ? false : true;//Making sure the spot is black
+                            isInvalidPlace = letter.IsEven() && number.IsEven() ? isInvalidPlace = letter.IsOdd() && number.IsOdd() ? true : false : false;//Making sure the spot is black
                         }
                     }
                 }
@@ -230,7 +230,7 @@ namespace Chess
             //Pawns
             Random r = new Random();
             int letter = r.Next(0, 8), number = r.Next(0, 2);
-            
+
             //Bishops
             AssignPiece(Piece.BISHOP, out letter, out number);
             //Somehow.. get where the bishop was placed. 
@@ -243,7 +243,7 @@ namespace Chess
 
             //Queens
             AssignPiece(Piece.QUEEN, out letter, out number);
-            
+
             //Rooks
             AssignPiece(Piece.ROOK, out letter, out number);
             AssignPiece(Piece.ROOK, out letter, out number);

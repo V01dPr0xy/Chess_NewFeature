@@ -3,12 +3,12 @@
     public enum Piece
     {
         NONE = -1,
-        PAWN,
-        ROOK,
-        KNIGHT,
-        BISHOP,
-        QUEEN,
-        KING
+        PAWN,//0
+        ROOK,//1
+        KNIGHT,//2
+        BISHOP,//3
+        QUEEN,//4
+        KING//5
     }
 
     public enum Player
@@ -37,6 +37,11 @@
         {
             return letter == ((position_t)obj).letter && number == ((position_t)obj).number;
         }
+
+        public override string ToString()
+        {
+            return $"{{{letter}, {number}}}";
+        }
     }
 
     public struct piece_t
@@ -57,6 +62,11 @@
             this.piece = copy.piece;
             this.player = copy.player;
             this.lastPosition = copy.lastPosition;
+        }
+
+        public override string ToString()
+        {
+            return $"Piece: {piece.ToString()}, Player: {player.ToString()}, LastPosition: {lastPosition.ToString()}";
         }
     }
 

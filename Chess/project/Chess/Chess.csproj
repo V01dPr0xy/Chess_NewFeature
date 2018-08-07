@@ -49,6 +49,7 @@
     <Compile Include="AI.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Chess.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="MainFormBoard.cs">
       <SubType>Form</SubType>
     </Compile>

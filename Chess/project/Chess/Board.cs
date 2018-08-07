@@ -195,7 +195,7 @@ namespace Chess
                             letter = r.Next(0, 8);
                             number = r.Next(0, 2);
 
-                            isInvalidPlace = letter.IsOdd() && number.IsEven() ? letter.IsEven() && number.IsOdd() ? true : false : false;//Making sure the spot is white
+                            isInvalidPlace = letter.IsOdd() && number.IsEven() ? false : letter.IsEven() && number.IsOdd() ? false : true;//Making sure the spot is white
                         }
                     }
                     else if (TileUnderPieceIsWhite(piece))
@@ -205,7 +205,7 @@ namespace Chess
                             letter = r.Next(0, 8);
                             number = r.Next(0, 2);
 
-                            isInvalidPlace = letter.IsEven() && number.IsEven() ? isInvalidPlace = letter.IsOdd() && number.IsOdd() ? true : false : false;//Making sure the spot is black
+                            isInvalidPlace = letter.IsEven() && number.IsEven() ? false : isInvalidPlace = letter.IsOdd() && number.IsOdd() ? true : false;//Making sure the spot is black
                         }
                     }
                 }

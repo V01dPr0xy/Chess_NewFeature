@@ -9,6 +9,8 @@ namespace Chess
     {
         private static int[] pieceWeights = { 1, 3, 4, 5, 7, 20 };
 
+        public position_t BishopPos;
+
         public piece_t[][] Grid { get; private set; }
         public Dictionary<Player, position_t> Kings { get; private set; }
         public Dictionary<Player, List<position_t>> Pieces { get; private set; }
@@ -126,56 +128,12 @@ namespace Chess
             return fitness;
         }
 
-        private bool SpotTaken(int letter, int number) => (Pieces[Player.WHITE].Where(p => p.letter == letter && p.number == number).Count() == 1);
+        public bool SpotTaken(int letter, int number) => (Pieces[Player.WHITE].Where(p => p.letter == letter && p.number == number).Count() == 1);
+        public bool SpotTakenByPiece(int letter, int number, Piece piece) => Grid[letter][number].piece == piece;
 
-        private position_t PositionFromPieceType(Piece piece)
-        {
-            position_t result = new position_t(-1, -1);
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 2; j++)
-                {
-                    if ((int)Grid[i][j].piece == (int)piece)
-                    {
-                        return new position_t(i, j);
-                    }
-                }
-            }
+        public int Mirror(int letter) => ((letter % 2) == 1) ? 6 : 7;
 
-            return result;
-        }
-
-        private int Mirror(int letter) => ((letter % 2) == 1) ? 6 : 7;
-
-        private bool TileUnderPieceIsBlack(Piece piece)
-        {
-            bool res = false;
-            //See if the tile is on white or black, then reassign if they are on the same colors
-            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsEven())
-                //This means the tile is white
-                res = true;
-            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsOdd())
-                //This means the tile is white
-                res = true;
-
-            return res;
-        }
-
-        private bool TileUnderPieceIsWhite(Piece piece)
-        {
-            bool res = false;
-            //See if the tile is on white or black, then reassign if they are on the same colors
-            if (PositionFromPieceType(piece).letter.IsEven() && PositionFromPieceType(piece).number.IsOdd())
-                //This means the tile is black
-                res = true;
-            else if (PositionFromPieceType(piece).letter.IsOdd() && PositionFromPieceType(piece).number.IsEven())
-                //This means the tile is black
-                res = true;
-
-            return res;
-        }
-
-        private void AssignPiece(Piece piece, out int letter, out int number)
+        public void AssignPiece(Piece piece, out int letter, out int number)
         {
             bool invalidPlacement = true;
 
@@ -184,28 +142,79 @@ namespace Chess
             {
                 Random r = new Random();
                 letter = r.Next(0, 8);
-                number = r.Next(0, 2);
+                number = 0;
                 if ((int)piece == 3)
                 {
-                    bool isInvalidPlace = true;
-                    if (TileUnderPieceIsBlack(piece))
+                    if (BishopPos.letter.IsEven())
                     {
-                        while (isInvalidPlace)
+                        bool badLetter = true;
+                        do
                         {
                             letter = r.Next(0, 8);
-                            number = r.Next(0, 2);
+                            if (letter.IsOdd())
+                            {
+                                badLetter = false;
+                            }
 
-                            isInvalidPlace = letter.IsOdd() && number.IsEven() ? false : letter.IsEven() && number.IsOdd() ? false : true;//Making sure the spot is white
-                        }
+                        } while (badLetter);
                     }
-                    else if (TileUnderPieceIsWhite(piece))
+                    else if(BishopPos.letter.IsOdd())
                     {
-                        while (isInvalidPlace)
+                        bool badLetter = true;
+                        do
                         {
                             letter = r.Next(0, 8);
-                            number = r.Next(0, 2);
+                            if (letter.IsEven())
+                            {
+                                badLetter = false;
+                            }
 
-                            isInvalidPlace = letter.IsEven() && number.IsEven() ? false : isInvalidPlace = letter.IsOdd() && number.IsOdd() ? true : false;//Making sure the spot is black
+                        } while (badLetter);
+                    }
+                    else
+                    {
+                        invalidPlacement = false;
+                    }
+                }
+                else if ((int)piece == 5)
+                {
+                    letter = r.Next(1, 7);
+                }
+                else if ((int)piece == 1)
+                {
+                    //Get the position of the King
+                    int letter_restriction = Kings[Player.WHITE].letter;
+
+                    //Restrict the Rooks
+                    bool isInvalid = true;
+                    while (isInvalid)
+                    {
+                        bool rookFound = false;
+                        for (int i = 0; i < letter_restriction; i++)
+                        {
+                            //If the spot isn't taken by a rook, continue
+                            if (!SpotTakenByPiece(0, i, Piece.ROOK))
+                            {
+                                //If the i variable reaches the king's value and the spot isn't taken
+                                if (i == letter_restriction - 1)
+                                {
+                                    letter = r.Next(0, letter_restriction);
+                                    isInvalid = false;
+                                    break;
+                                }
+                            }
+                            else if (SpotTakenByPiece(0, i, Piece.ROOK))
+                            {
+                                rookFound = true;
+                                break;
+                            }
+                            //if the spot is taken by a rook, ignore.
+                        }
+
+                        if (rookFound)
+                        {
+                            letter = r.Next(letter_restriction, 8);
+                            isInvalid = false;
                         }
                     }
                 }
@@ -215,6 +224,7 @@ namespace Chess
                 {
                     invalidPlacement = false;
                 }
+
 
             } while (invalidPlacement);
 
@@ -227,35 +237,40 @@ namespace Chess
         {
             //Add the pieces via using the SetPiece() method
             //Check for placement, then add:
-            //Pawns
             Random r = new Random();
-            int letter = r.Next(0, 8), number = r.Next(0, 2);
-
-            //Bishops
-            AssignPiece(Piece.BISHOP, out letter, out number);
-            //Somehow.. get where the bishop was placed. 
-            AssignPiece(Piece.BISHOP, out letter, out number);
+            int letter = r.Next(0, 8), number = 0;
+            //Pawns
 
             for (int i = 0; i < 8; i++)
             {
-                AssignPiece(Piece.PAWN, out letter, out number);
+                SetPiece(Piece.PAWN, Player.WHITE, i, 1);
+                SetPiece(Piece.PAWN, Player.BLACK, i, 6);
             }
-
-            //Queens
-            AssignPiece(Piece.QUEEN, out letter, out number);
-
-            //Rooks
-            AssignPiece(Piece.ROOK, out letter, out number);
-            AssignPiece(Piece.ROOK, out letter, out number);
-
-            //Knights
-            AssignPiece(Piece.KNIGHT, out letter, out number);
-            AssignPiece(Piece.KNIGHT, out letter, out number);
 
             //Kings
             AssignPiece(Piece.KING, out letter, out number);
             Kings[Player.WHITE] = new position_t(letter, number);
             Kings[Player.BLACK] = new position_t(letter, Mirror(number));
+
+            //Rooks
+            AssignPiece(Piece.ROOK, out letter, out number);
+            AssignPiece(Piece.ROOK, out letter, out number);
+
+            //Bishops
+            AssignPiece(Piece.BISHOP, out letter, out number);
+            BishopPos = new position_t(letter, number);
+            //Somehow.. get where the bishop was placed. 
+            AssignPiece(Piece.BISHOP, out letter, out number);
+
+
+            //Queens
+            AssignPiece(Piece.QUEEN, out letter, out number);
+
+
+            //Knights
+            AssignPiece(Piece.KNIGHT, out letter, out number);
+            AssignPiece(Piece.KNIGHT, out letter, out number);
+
         }
 
         public void SetInitialPlacement()

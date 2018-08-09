@@ -13,7 +13,7 @@ namespace Chess
     public partial class MainForm : Form, UIBoard
     {
         private ToolStripMenuItem temp_difficulty; // selected difficulty
-        private ToolStripMenuItem temp_gameplayType; // selected gameplay type
+        public ToolStripMenuItem temp_gameplayType; // selected gameplay type
         TimeSpan m_whiteTime = new TimeSpan(0);
         TimeSpan m_blackTime = new TimeSpan(0);
 

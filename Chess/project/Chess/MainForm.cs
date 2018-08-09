@@ -12,13 +12,13 @@ namespace Chess
 {
     public partial class MainForm : Form, UIBoard
     {
-        bool m_aigame = false;
-        bool m_checkmate = false;
-        bool m_manualBoard = false; // Don't init board on new game
-        bool m_finalizedBoard = false;
-        bool m_defaultGamePlayType = true;
-        Player m_manualPlayer = Player.WHITE;
-        Piece m_manualPiece = Piece.PAWN;
+        public bool m_aigame = false;
+        public bool m_checkmate = false;
+        public bool m_manualBoard = false; // Don't init board on new game
+        public bool m_finalizedBoard = false;
+        public bool m_defaultGamePlayType = true;
+        public Player m_manualPlayer = Player.WHITE;
+        public Piece m_manualPiece = Piece.PAWN;
 
         Chess chess;
                 
@@ -67,7 +67,7 @@ namespace Chess
         /// <summary>
         /// Set up a new game for the specified number of players.
         /// </summary>
-        private void NewGame(int nPlayers)
+        public void NewGame(int nPlayers)
         {
             // clean up all of the things first
             if (!m_manualBoard) Stop();
@@ -174,6 +174,8 @@ namespace Chess
                 for (int j = 0; j < 8; j++)
                     SetPiece(board.Grid[i][j].piece, board.Grid[i][j].player, j, i);
         }
+
+        public ChessBoard GetBoard() => chess.Board;
 
         public void LogMove(string move)
         {
